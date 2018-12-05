@@ -8,6 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +30,11 @@ public class DetailView extends AppCompatActivity {
 
     DatabaseReference databasePlants;
 
+    private LineChart Temp_linechart;
+    ArrayList<Entry> yData;
+    DatabaseReference mPostReference;
+    ValueEventListener valueEventListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,18 +51,22 @@ public class DetailView extends AppCompatActivity {
         textViewPot = (TextView) findViewById(R.id.textPot);
         textViewHumid = (TextView) findViewById(R.id.textHumid);
 //        textViewPlant = (TextView) findViewById(R.id.textPlant);
-//        textViewID = (TextView) findViewById(R.id.textViewID);
+        textViewID = (TextView) findViewById(R.id.textViewID);
 //        textViewStatus = (TextView) findViewById(R.id.textViewStatus);
 
         Intent intent = getIntent();
         String pot = intent.getStringExtra(MainActivity.POT_ID);
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
+        String date = intent.getStringExtra(MainActivity.POT_TIME);
 
         textViewPot.setText(pot);
         textViewHumid.setText(humid);
-
+        textViewID.setText(date);
 //        databasePlants = FirebaseDatabase.getInstance().getReference("plants").child(pot);
 
+        Temp_linechart = (LineChart) findViewById(R.id.LineChart);
+
+        mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user1").child("0").child("data");
     }
 
     // Graphing starts when detail view is inflated
@@ -81,7 +94,7 @@ public class DetailView extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this, "Fail to load post", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailView.this, "Fail to load post", Toast.LENGTH_SHORT).show();
             }
         });
     }

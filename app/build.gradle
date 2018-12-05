@@ -17,6 +17,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions{
+        exclude 'META-INF/proguard/androidx-annotations.pro' // Fix More than one file was found with OS independent path 'META-INF/proguard/androidx-annotations.pro'
+    }
+}
+
+repositories {
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -27,4 +34,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
 }
