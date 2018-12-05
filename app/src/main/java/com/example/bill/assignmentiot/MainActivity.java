@@ -6,12 +6,18 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -37,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String NOTIFICATION_TITLE = "Smart Pot";
     public static final String NOTIFICATION_MESSAGE = "Some of your plants are drying out, Water them to keep them healthy!";
-
+    public boolean notiFlag = true;
     // Declare Notification Compat for API 25 and lower
     private NotificationManagerCompat notificationManager;
 
@@ -54,12 +60,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Custom Toolbar for notification Icon
         Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         // Notification for API 25 or lower
         notificationManager = NotificationManagerCompat.from(this);
         databasePot = FirebaseDatabase.getInstance().getReference("db").child("user1").child("00:18:E4:00:11:E4").child("pot1").child("logs");
 
-        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30");
-        databasePot.child("0").setValue(pot);
+//        // Try setting value in firebase
+//        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30");
+//        databasePot.child("0").setValue(pot);
 
 
         Pots = new ArrayList<>();
@@ -85,6 +93,37 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.notification_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.itemNotification:
+                if (notiFlag){
+                    Drawable notiOff = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_notifications_off, null);
+                    item.setIcon(notiOff);
+                    notiFlag = false;
+
+                    Toast.makeText(this, "Notification turned off", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                else{
+                    Drawable notiOn = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_notifications,null);
+                    item.setIcon(notiOn);
+                    notiFlag = true;
+
+                    Toast.makeText(this, "Notification turned on", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            default: return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

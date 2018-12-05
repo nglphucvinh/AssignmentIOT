@@ -17,10 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".DetailView"
+            android:parentActivityName=".MainActivity" ></activity>
         <receiver android:name=".NotificationReceiver" />
-
-        <activity android:name=".DetailView"></activity>
     </application>
 
 </manifest>
