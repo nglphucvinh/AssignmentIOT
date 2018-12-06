@@ -38,6 +38,7 @@ public class DetailView extends AppCompatActivity {
     DatabaseReference databasePlants;
     DatabaseReference databaseControl;
 
+    // LineChart Graph
     private LineChart lineChart;
     ArrayList<Entry> yData;
     DatabaseReference mPostReference;
@@ -63,6 +64,7 @@ public class DetailView extends AppCompatActivity {
         textViewDate = (TextView) findViewById(R.id.textViewID);
 //        textViewStatus = (TextView) findViewById(R.id.textViewStatus);
 
+        // Receive Intent from List View
         Intent intent = getIntent();
         final String pot = intent.getStringExtra(MainActivity.POT_ID);
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
@@ -120,8 +122,9 @@ public class DetailView extends AppCompatActivity {
         mPostReference.addValueEventListener(valueEventListener= new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                // yAxis -> Humidity; xAxis -> Date;
                 yData = new ArrayList<>();
+
                 float i =0;
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
                     i=i+1;
@@ -131,6 +134,9 @@ public class DetailView extends AppCompatActivity {
                 }
                 final LineDataSet lineDataSet = new LineDataSet(yData,"Humidity");
                 LineData data = new LineData(lineDataSet);
+
+
+
                 lineChart.setData(data);
                 lineChart.notifyDataSetChanged();
                 lineChart.invalidate();

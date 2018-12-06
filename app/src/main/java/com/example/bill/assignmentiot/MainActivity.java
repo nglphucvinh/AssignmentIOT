@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private NotificationManagerCompat notificationManager;
 
     DatabaseReference databasePot;
+    DatabaseReference databasePlants;
+    Integer type0_min, type1_min, type2_min;
 
     ListView listViewPots;
     List<Param> Pots;
@@ -78,7 +80,32 @@ public class MainActivity extends AppCompatActivity {
         notificationManager = NotificationManagerCompat.from(this);
         databasePot = FirebaseDatabase.getInstance().getReference("db").child("user1").child("00:18:E4:00:11:E4").child("pot1").child("logs");
 
-        // Try setting value in firebase
+        // Setting Condition for notification
+        databasePlants = FirebaseDatabase.getInstance().getReference("plant");
+        databasePlants.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
+                if (plant0 != null){ type0_min = plant0.getHumid_min();
+                    Log.d("temp0", type0_min + "");} // 80
+                else { type0_min = 10; }
+                plant0 = dataSnapshot.child("1").getValue(Plants.class);
+                if (plant0 != null){ type1_min = plant0.getHumid_min();
+                    Log.d("temp1", type1_min + "");} // 40
+                else { type0_min = 20; }
+                plant0 = dataSnapshot.child("2").getValue(Plants.class);
+                if (plant0 != null){ type2_min = plant0.getHumid_min();
+                    Log.d("temp2", type2_min + "");} // 20
+                else { type0_min = 30; }
+                }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("Plant DB", "read failed");
+            }
+        });
+
+//        // Try setting value in firebase
 //        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30", "0");
 //        databasePot.child("1").setValue(pot);
 
@@ -101,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.d("HELLO","HELLO");
+
+        // Get into Detail View on tap
         listViewPots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -110,27 +139,26 @@ public class MainActivity extends AppCompatActivity {
                 // Creating an intent
                 Intent intent = new Intent(getApplicationContext(), DetailView.class);
 
-                //putting param name and id to intent
+                // Putting parameters to intent for latter use
                 intent.putExtra(POT_ID, param.getID());
                 intent.putExtra(POT_VALUE, param.getValue());
                 intent.putExtra(POT_TIME, param.getCurrentTime());
                 intent.putExtra(POT_TYPE, param.getType());
 
-
-                //starting the activity with intent
+                // Starting the activity with intent
                 startActivity(intent);
             }
         });
 
     }
-
+    // Setting notification Icon on Toolbar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.notification_menu, menu);
         return true;
     }
-
+    // Action when tapping icon
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
@@ -169,10 +197,26 @@ public class MainActivity extends AppCompatActivity {
                     Param pot = paramSnapshot.getValue(Param.class);
 
                     Pots.add(pot);
-                    if (pot != null){
-                        Integer a = Integer.parseInt(pot.getRawValue());
-                        if (a <= 20){
-                            sendOnChannel1();
+                    if (notiFlag) {
+                        if (pot != null) {
+                            Integer a = Integer.parseInt(pot.getRawValue());
+                            Log.d("a", a + "");
+                            Log.d("getType",  pot.getType());
+                            switch (pot.getType()){
+                                case "0":
+                                    if (a<type0_min){sendOnChannel1(); Log.d("go in here","yes");break;}
+                                case "1":
+                                    if (a<type1_min) {
+                                        sendOnChannel1();
+                                        break;
+                                    }
+                                case "2":
+                                    if (a<type2_min) {
+                                        sendOnChannel1();
+                                        break;
+                                    }
+                                default: break;
+                            }
                         }
                     }
 
@@ -216,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true)
-                .addAction(R.mipmap.ic_launcher,"Toast",actionIntent)
+                .addAction(R.mipmap.ic_launcher,"Water",actionIntent)
                 .build();
 
         notificationManager.notify(1,notification);
