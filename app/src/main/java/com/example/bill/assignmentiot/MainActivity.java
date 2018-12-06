@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String POT_ID = "potID";
     public static final String POT_VALUE = "someValue";
     public static final String POT_TIME = "timeCurrent";
+    public static final String POT_NAME = "potName";
 
     public static final String NOTIFICATION_TITLE = "Smart Pot";
     public static final String NOTIFICATION_MESSAGE = "Some of your plants are drying out, Water them to keep them healthy!";
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(POT_ID, param.getID());
                 intent.putExtra(POT_VALUE, param.getValue());
                 intent.putExtra(POT_TIME, param.getCurrentTime());
+                intent.putExtra(POT_NAME, param.getName());
 
                 //starting the activity with intent
                 startActivity(intent);
