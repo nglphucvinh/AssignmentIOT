@@ -15,6 +15,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -28,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String NOTIFICATION_TITLE = "Smart Pot";
     public static final String NOTIFICATION_MESSAGE = "Some of your plants are drying out, Water them to keep them healthy!";
     public boolean notiFlag = true;
+
+    public static final String topicHumid = "humid";
+    public static final String topicLog = "log";
+    public static final String topicCmd = "command";
+
+    private MqttControl mqttControlRead;
+    private MqttControl mqttControlWriteHumid;
+    private MqttControl mqttControlWriteLog;
+
     // Declare Notification Compat for API 25 and lower
     private NotificationManagerCompat notificationManager;
 
@@ -58,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         // Custom Toolbar for notification Icon
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -69,11 +82,25 @@ public class MainActivity extends AppCompatActivity {
 //        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30");
 //        databasePot.child("0").setValue(pot);
 
-
         Pots = new ArrayList<>();
 
         // Inflate view on list
         listViewPots = (ListView) findViewById(R.id.listPots);
+
+        // Register to MQTT
+        try {
+            Log.d("HELLO","HELLO");
+            mqttControlRead = new MqttControl(topicCmd, "ClientCmd1", false);
+            Log.d("HELLO","Kn ne");
+            mqttControlWriteHumid = new MqttControl(topicHumid, "ClientHumid1", true);
+            mqttControlWriteLog = new MqttControl(topicLog, "ClientLog1", false);
+            mqttControlRead.sendmessage("Hello",topicCmd);
+        } catch (MqttException e) {
+            Log.d("HELLO","Error tum lum");
+            e.printStackTrace();
+        }
+
+        Log.d("HELLO","HELLO");
         listViewPots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -87,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(POT_ID, param.getID());
                 intent.putExtra(POT_VALUE, param.getValue());
                 intent.putExtra(POT_TIME, param.getCurrentTime());
+
 
                 //starting the activity with intent
                 startActivity(intent);
