@@ -33,10 +33,15 @@ public class PotList extends ArrayAdapter<Param> {
         // Lookup view for data population
         TextView textViewValue = (TextView) listViewItem.findViewById(R.id.textHumid);
         TextView textViewPot = (TextView) listViewItem.findViewById(R.id.textPot);
-        TextView textViewDate = (TextView) listViewItem.findViewById(R.id.textDate);
+        TextView textViewStatus = (TextView) listViewItem.findViewById(R.id.textStatus);
         // Populate the data into the template view susing the data object
-        textViewPot.setText(pot.getID());
-        textViewDate.setText(pot.getCurrentTime());
+        textViewPot.setText(pot.getName());
+        if (pot.isAuto()){
+            textViewStatus.setText("Auto-water: True");
+        }
+        else{
+            textViewStatus.setText("Auto-water: False");
+        }
         textViewValue.setText(pot.getValue());
         //Return the completed view to render on screen
         return listViewItem;

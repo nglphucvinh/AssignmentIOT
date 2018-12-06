@@ -34,11 +34,13 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.os.SystemClock.sleep;
 import static com.example.bill.assignmentiot.Notify.CHANNEL_1_ID;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MyActivity";
-
+    public static final String MAC_01 = "00:18:E4:00:11:E4";
+//    private static boolean readPlantDB = false;
     public static final String POT_ID = "potID";
     public static final String POT_VALUE = "someValue";
     public static final String POT_TIME = "timeCurrent";
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String NOTIFICATION_TITLE = "Smart Pot";
     public static final String NOTIFICATION_MESSAGE = "Some of your plants are drying out, Water them to keep them healthy!";
-    public boolean notiFlag = true;
+    private static boolean notiFlag = true;
 
     public static final String topicHumid = "humid";
     public static final String topicLog = "log";
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
     DatabaseReference databasePot;
     DatabaseReference databasePlants;
-    Integer type0_min, type1_min, type2_min;
+    static Integer type0_min, type1_min, type2_min;
 
     ListView listViewPots;
     List<Param> Pots;
@@ -78,32 +80,33 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Notification for API 25 or lower
         notificationManager = NotificationManagerCompat.from(this);
-        databasePot = FirebaseDatabase.getInstance().getReference("db").child("user1").child("00:18:E4:00:11:E4").child("pot1").child("logs");
+        // Getting data path on database
+        databasePot = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01);
 
         // Setting Condition for notification
         databasePlants = FirebaseDatabase.getInstance().getReference("plant");
-        databasePlants.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
-                if (plant0 != null){ type0_min = plant0.getHumid_min();
-                    Log.d("temp0", type0_min + "");} // 80
-                else { type0_min = 10; }
-                plant0 = dataSnapshot.child("1").getValue(Plants.class);
-                if (plant0 != null){ type1_min = plant0.getHumid_min();
-                    Log.d("temp1", type1_min + "");} // 40
-                else { type0_min = 20; }
-                plant0 = dataSnapshot.child("2").getValue(Plants.class);
-                if (plant0 != null){ type2_min = plant0.getHumid_min();
-                    Log.d("temp2", type2_min + "");} // 20
-                else { type0_min = 30; }
-                }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("Plant DB", "read failed");
-            }
-        });
+//        databasePlants.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
+//                if (plant0 != null){ type0_min = plant0.getHumid_min();
+//                    Log.d("temp0", type0_min + "");} // 80
+//                else { type0_min = 10; }
+//                plant0 = dataSnapshot.child("1").getValue(Plants.class);
+//                if (plant0 != null){ type1_min = plant0.getHumid_min();
+//                    Log.d("temp1", type1_min + "");} // 40
+//                else { type0_min = 20; }
+//                plant0 = dataSnapshot.child("2").getValue(Plants.class);
+//                if (plant0 != null){ type2_min = plant0.getHumid_min();
+//                    Log.d("temp2", type2_min + "");} // 20
+//                else { type0_min = 30; }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.d("Plant DB", "read failed");
+//            }
+//        });
 
 //        // Try setting value in firebase
 //        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30", "0");
@@ -115,19 +118,19 @@ public class MainActivity extends AppCompatActivity {
         listViewPots = (ListView) findViewById(R.id.listPots);
 
         // Register to MQTT
-        try {
-            Log.d("HELLO","HELLO");
-            mqttControlRead = new MqttControl(topicCmd, "ClientCmd1", false);
-            Log.d("HELLO","Kn ne");
-            mqttControlWriteHumid = new MqttControl(topicHumid, "ClientHumid1", true);
-            mqttControlWriteLog = new MqttControl(topicLog, "ClientLog1", false);
-            mqttControlRead.sendmessage("Hello",topicCmd);
-        } catch (MqttException e) {
-            Log.d("HELLO","Error tum lum");
-            e.printStackTrace();
-        }
-
-        Log.d("HELLO","HELLO");
+//        try {
+//            Log.d("HELLO","HELLO");
+//            mqttControlRead = new MqttControl(topicCmd, "ClientCmd1", false);
+//            Log.d("HELLO","Kn ne");
+//            mqttControlWriteHumid = new MqttControl(topicHumid, "ClientHumid1", true);
+//            mqttControlWriteLog = new MqttControl(topicLog, "ClientLog1", false);
+//            mqttControlRead.sendmessage("Hello",topicCmd);
+//        } catch (MqttException e) {
+//            Log.d("HELLO","Error tum lum");
+//            e.printStackTrace();
+//        }
+//
+//        Log.d("HELLO","HELLO");
 
         // Get into Detail View on tap
         listViewPots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -142,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 // Putting parameters to intent for latter use
                 intent.putExtra(POT_ID, param.getID());
                 intent.putExtra(POT_VALUE, param.getValue());
-                intent.putExtra(POT_TIME, param.getCurrentTime());
+                intent.putExtra(POT_NAME, param.getName());
                 intent.putExtra(POT_TYPE, param.getType());
 
                 // Starting the activity with intent
@@ -197,34 +200,33 @@ public class MainActivity extends AppCompatActivity {
                     Param pot = paramSnapshot.getValue(Param.class);
 
                     Pots.add(pot);
-                    if (notiFlag) {
-                        if (pot != null) {
-                            Integer a = Integer.parseInt(pot.getRawValue());
-                            Log.d("a", a + "");
-                            Log.d("getType",  pot.getType());
-                            switch (pot.getType()){
-                                case "0":
-                                    if (a<type0_min){sendOnChannel1(); Log.d("go in here","yes");break;}
-                                case "1":
-                                    if (a<type1_min) {
-                                        sendOnChannel1();
-                                        break;
-                                    }
-                                case "2":
-                                    if (a<type2_min) {
-                                        sendOnChannel1();
-                                        break;
-                                    }
-                                default: break;
-                            }
-                        }
-                    }
+//                    if (notiFlag) {
+//                        if (pot != null) {
+//                            Integer a = Integer.parseInt(pot.getRawValue());
+//                            Log.d("a", a + "");
+//                            Log.d("getType",  pot.getType());
+//                            switch (pot.getType()){
+//                                case "0":
+//                                    if (a<type0_min){sendOnChannel1(); Log.d("go in here","yes");break;}
+//                                case "1":
+//                                    if (a<type1_min) {
+//                                        sendOnChannel1();
+//                                        break;
+//                                    }
+//                                case "2":
+//                                    if (a<type2_min) {
+//                                        sendOnChannel1();
+//                                        break;
+//                                    }
+//                                default: break;
+//                            }
+//                        }
+//                    }
 
                 }
 
                 PotList adapter = new PotList(MainActivity.this, Pots);
                 listViewPots.setAdapter(adapter);
-
             }
 
             @Override

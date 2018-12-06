@@ -1,19 +1,26 @@
 package com.example.bill.assignmentiot;
 
 public class Param {
+    private boolean auto;
     private String id;
     private String value;
-    private String currentTime;
+    private String name;
     private String type;
+
     public Param(){
 
     }
 
-    public Param(String paramID, String paramValue, String time, String type) {
-        this.id = paramID;
-        this.value = paramValue;
-        this.currentTime = time;
+    public Param(boolean auto, String id, String value, String name, String type) {
+        this.auto = auto;
+        this.id = id;
+        this.value = value;
+        this.name = name;
         this.type = type;
+    }
+
+    public boolean isAuto() {
+        return auto;
     }
 
     public String getID() {
@@ -28,8 +35,9 @@ public class Param {
         return value + " %";
     }
 
-    public String getCurrentTime(){
-        return currentTime;
+
+    public String getName() {
+        return name;
     }
 
     public String getType() {

@@ -24,9 +24,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import static com.example.bill.assignmentiot.MainActivity.MAC_01;
+
 public class DetailView extends AppCompatActivity {
 
-    public static final String MAC_01 = "00:18:E4:00:11:E4";
     TextView textViewPot; // Name of the Pot
     TextView textViewHumid;
     TextView textViewPlant;
@@ -66,7 +67,7 @@ public class DetailView extends AppCompatActivity {
 
         // Receive Intent from List View
         Intent intent = getIntent();
-        final String pot = intent.getStringExtra(MainActivity.POT_ID);
+        final String pot = intent.getStringExtra(MainActivity.POT_NAME);
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
         String date = intent.getStringExtra(MainActivity.POT_TIME);
         String type = intent.getStringExtra(MainActivity.POT_TYPE);
@@ -99,7 +100,7 @@ public class DetailView extends AppCompatActivity {
 
         lineChart = (LineChart) findViewById(R.id.LineChart);
 
-        mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user1").child("0").child("data");
+        mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child(pot).child("data");
         databaseControl = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child("pot1");
 
 
