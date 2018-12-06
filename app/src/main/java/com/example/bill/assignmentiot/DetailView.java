@@ -1,12 +1,16 @@
 package com.example.bill.assignmentiot;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import static android.os.SystemClock.sleep;
 import static com.example.bill.assignmentiot.MainActivity.MAC_01;
 
 public class DetailView extends AppCompatActivity {
@@ -32,12 +37,13 @@ public class DetailView extends AppCompatActivity {
     TextView textViewHumid;
     TextView textViewPlant;
     TextView textViewDate;
-//    TextView textViewStatus;
+//  TextView textViewStatus;
     ImageView imageWaterCan;
 
 
     DatabaseReference databasePlants;
     DatabaseReference databaseControl;
+    static Integer humidMax;
 
     // LineChart Graph
     private LineChart lineChart;
@@ -71,6 +77,7 @@ public class DetailView extends AppCompatActivity {
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
         String date = intent.getStringExtra(MainActivity.POT_TIME);
         String type = intent.getStringExtra(MainActivity.POT_TYPE);
+        final String id = intent.getStringExtra(MainActivity.POT_ID);
         Toast.makeText(this, type, Toast.LENGTH_SHORT).show();
 
         textViewPot.setText(pot);
@@ -85,9 +92,14 @@ public class DetailView extends AppCompatActivity {
                 Plants plant = dataSnapshot.getValue(Plants.class);
                 if (plant != null){
                     name = plant.getName();
+                    humidMax = plant.getHumid_max();
                 }
-                else name = "undefined";
+                else {
+                    name = "undefined";
+                    humidMax = 60;
+                }
                 textViewPlant.setText(name);
+
             }
 
             @Override
@@ -96,20 +108,19 @@ public class DetailView extends AppCompatActivity {
             }
         });
 
-
-
         lineChart = (LineChart) findViewById(R.id.LineChart);
 
         mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child(pot).child("data");
         databaseControl = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child("pot1");
 
-
+        Log.d("humid",humidMax+"");
+        Log.d("code","C"+ id + humidMax +MAC_01);
         imageWaterCan = (ImageView) findViewById(R.id.imageViewWaterCanIcon);
         imageWaterCan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(DetailView.this, "Hello", Toast.LENGTH_SHORT).show();
-                String code = "R" + pot + "00" + MAC_01;
+                String code = "C" + id + humidMax + MAC_01;
                 Commands key = new Commands(code);
                 databaseControl.child("commands").setValue(key);
             }
@@ -156,4 +167,26 @@ public class DetailView extends AppCompatActivity {
         inflater.inflate(R.menu.automation_menu, menu);
         return true;
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.nowWater:
+                Toast.makeText(this, "Changed to smart-water mode", Toast.LENGTH_SHORT).show();
+
+
+                return true;
+            case R.id.autoWater:
+                Toast.makeText(this, "Changed to auto-water mode", Toast.LENGTH_SHORT).show();
+
+
+                return true;
+            case R.id.manualWater:
+                Toast.makeText(this, "Changed to manual-water mode", Toast.LENGTH_SHORT).show();
+
+
+                return true;
+            default: return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

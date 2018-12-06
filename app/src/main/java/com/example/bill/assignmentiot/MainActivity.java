@@ -85,30 +85,30 @@ public class MainActivity extends AppCompatActivity {
 
         // Setting Condition for notification
         databasePlants = FirebaseDatabase.getInstance().getReference("plant");
-//        databasePlants.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
-//                if (plant0 != null){ type0_min = plant0.getHumid_min();
-//                    Log.d("temp0", type0_min + "");} // 80
-//                else { type0_min = 10; }
-//                plant0 = dataSnapshot.child("1").getValue(Plants.class);
-//                if (plant0 != null){ type1_min = plant0.getHumid_min();
-//                    Log.d("temp1", type1_min + "");} // 40
-//                else { type0_min = 20; }
-//                plant0 = dataSnapshot.child("2").getValue(Plants.class);
-//                if (plant0 != null){ type2_min = plant0.getHumid_min();
-//                    Log.d("temp2", type2_min + "");} // 20
-//                else { type0_min = 30; }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Log.d("Plant DB", "read failed");
-//            }
-//        });
+        databasePlants.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
+                if (plant0 != null){ type0_min = plant0.getHumid_min();
+                    Log.d("temp0", type0_min + "");} // 80
+                else { type0_min = 10; }
+                plant0 = dataSnapshot.child("1").getValue(Plants.class);
+                if (plant0 != null){ type1_min = plant0.getHumid_min();
+                    Log.d("temp1", type1_min + "");} // 40
+                else { type0_min = 20; }
+                plant0 = dataSnapshot.child("2").getValue(Plants.class);
+                if (plant0 != null){ type2_min = plant0.getHumid_min();
+                    Log.d("temp2", type2_min + "");} // 20
+                else { type0_min = 30; }
+            }
 
-//        // Try setting value in firebase
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("Plant DB", "read failed");
+            }
+        });
+        Log.d("temp3", type2_min + "");
+        // Try setting value in firebase
 //        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30", "0");
 //        databasePot.child("1").setValue(pot);
 
@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
 //            Log.d("HELLO","Error tum lum");
 //            e.printStackTrace();
 //        }
-//
-//        Log.d("HELLO","HELLO");
+
+        Log.d("HELLO","HELLO");
 
         // Get into Detail View on tap
         listViewPots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
