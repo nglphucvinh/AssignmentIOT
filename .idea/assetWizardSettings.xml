@@ -15,8 +15,8 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="opacityPercent" value="89" />
-                            <entry key="outputName" value="ic_watering_can" />
-                            <entry key="sourceFile" value="$PROJECT_DIR$/../../watering-can.svg" />
+                            <entry key="outputName" value="ic_automation" />
+                            <entry key="sourceFile" value="$PROJECT_DIR$/../../icons8-automation.svg" />
                           </map>
                         </option>
                       </PersistentState>

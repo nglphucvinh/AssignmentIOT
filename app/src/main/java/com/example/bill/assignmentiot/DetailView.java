@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,7 +31,6 @@ public class DetailView extends AppCompatActivity {
     TextView textViewHumid;
     TextView textViewPlant;
     TextView textViewDate;
-    TextView textViewName;
 //    TextView textViewStatus;
     ImageView imageWaterCan;
 
@@ -37,7 +38,7 @@ public class DetailView extends AppCompatActivity {
     DatabaseReference databasePlants;
     DatabaseReference databaseControl;
 
-    private LineChart Temp_linechart;
+    private LineChart lineChart;
     ArrayList<Entry> yData;
     DatabaseReference mPostReference;
     ValueEventListener valueEventListener;
@@ -55,9 +56,10 @@ public class DetailView extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+
         textViewPot = (TextView) findViewById(R.id.textPot);
         textViewHumid = (TextView) findViewById(R.id.textHumid);
-//        textViewPlant = (TextView) findViewById(R.id.textPlant);
+        textViewPlant = (TextView) findViewById(R.id.textPlant);
         textViewDate = (TextView) findViewById(R.id.textViewID);
 //        textViewStatus = (TextView) findViewById(R.id.textViewStatus);
 
@@ -65,14 +67,35 @@ public class DetailView extends AppCompatActivity {
         final String pot = intent.getStringExtra(MainActivity.POT_ID);
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
         String date = intent.getStringExtra(MainActivity.POT_TIME);
-        String name = intent.getStringExtra(MainActivity.POT_NAME);
+        String type = intent.getStringExtra(MainActivity.POT_TYPE);
+        Toast.makeText(this, type, Toast.LENGTH_SHORT).show();
 
         textViewPot.setText(pot);
         textViewHumid.setText(humid);
         textViewDate.setText(date);
-//        databasePlants = FirebaseDatabase.getInstance().getReference("plants").child(pot);
 
-        Temp_linechart = (LineChart) findViewById(R.id.LineChart);
+        databasePlants = FirebaseDatabase.getInstance().getReference("plant").child(type);
+        databasePlants.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name;
+                Plants plant = dataSnapshot.getValue(Plants.class);
+                if (plant != null){
+                    name = plant.getName();
+                }
+                else name = "undefined";
+                textViewPlant.setText(name);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(DetailView.this, "read plant failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        lineChart = (LineChart) findViewById(R.id.LineChart);
 
         mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user1").child("0").child("data");
         databaseControl = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child("pot1");
@@ -108,9 +131,9 @@ public class DetailView extends AppCompatActivity {
                 }
                 final LineDataSet lineDataSet = new LineDataSet(yData,"Humidity");
                 LineData data = new LineData(lineDataSet);
-                Temp_linechart.setData(data);
-                Temp_linechart.notifyDataSetChanged();
-                Temp_linechart.invalidate();
+                lineChart.setData(data);
+                lineChart.notifyDataSetChanged();
+                lineChart.invalidate();
             }
 
             @Override
@@ -118,5 +141,12 @@ public class DetailView extends AppCompatActivity {
                 Toast.makeText(DetailView.this, "Fail to load post", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.automation_menu, menu);
+        return true;
     }
 }

@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String POT_VALUE = "someValue";
     public static final String POT_TIME = "timeCurrent";
     public static final String POT_NAME = "potName";
+    public static final String POT_TYPE = "potType";
 
     public static final String NOTIFICATION_TITLE = "Smart Pot";
     public static final String NOTIFICATION_MESSAGE = "Some of your plants are drying out, Water them to keep them healthy!";
@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference databasePot;
 
     ListView listViewPots;
-
     List<Param> Pots;
 
     @Override
@@ -66,10 +65,9 @@ public class MainActivity extends AppCompatActivity {
         notificationManager = NotificationManagerCompat.from(this);
         databasePot = FirebaseDatabase.getInstance().getReference("db").child("user1").child("00:18:E4:00:11:E4").child("pot1").child("logs");
 
-//        // Try setting value in firebase
-//        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30");
-//        databasePot.child("0").setValue(pot);
-
+        // Try setting value in firebase
+//        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30", "0");
+//        databasePot.child("1").setValue(pot);
 
         Pots = new ArrayList<>();
 
@@ -78,17 +76,17 @@ public class MainActivity extends AppCompatActivity {
         listViewPots.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //getting the selected pot
+                // Getting the selected pot
                 Param param = Pots.get(position);
 
-                //creating an intent
+                // Creating an intent
                 Intent intent = new Intent(getApplicationContext(), DetailView.class);
 
                 //putting param name and id to intent
                 intent.putExtra(POT_ID, param.getID());
                 intent.putExtra(POT_VALUE, param.getValue());
                 intent.putExtra(POT_TIME, param.getCurrentTime());
-                intent.putExtra(POT_NAME, param.getName());
+                intent.putExtra(POT_TYPE, param.getType());
 
                 //starting the activity with intent
                 startActivity(intent);
@@ -142,6 +140,13 @@ public class MainActivity extends AppCompatActivity {
                     Param pot = paramSnapshot.getValue(Param.class);
 
                     Pots.add(pot);
+                    if (pot != null){
+                        Integer a = Integer.parseInt(pot.getRawValue());
+                        if (a <= 20){
+                            sendOnChannel1();
+                        }
+                    }
+
                 }
 
                 PotList adapter = new PotList(MainActivity.this, Pots);
@@ -156,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void sendOnChannel1(View v){
+    public void sendOnChannel1(){
         Intent activityIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0, activityIntent, 0);
