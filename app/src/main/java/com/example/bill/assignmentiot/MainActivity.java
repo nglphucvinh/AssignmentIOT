@@ -89,16 +89,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
-                if (plant0 != null){ type0_min = plant0.getHumid_min();
-                    Log.d("temp0", type0_min + "");} // 80
+                if (plant0 != null){ type0_min = plant0.getHumid_min(); } // 80
                 else { type0_min = 10; }
                 plant0 = dataSnapshot.child("1").getValue(Plants.class);
-                if (plant0 != null){ type1_min = plant0.getHumid_min();
-                    Log.d("temp1", type1_min + "");} // 40
+                if (plant0 != null){ type1_min = plant0.getHumid_min(); } // 40
                 else { type0_min = 20; }
                 plant0 = dataSnapshot.child("2").getValue(Plants.class);
-                if (plant0 != null){ type2_min = plant0.getHumid_min();
-                    Log.d("temp2", type2_min + "");} // 20
+                if (plant0 != null){ type2_min = plant0.getHumid_min(); } // 20
                 else { type0_min = 30; }
             }
 
@@ -118,15 +115,15 @@ public class MainActivity extends AppCompatActivity {
         listViewPots = (ListView) findViewById(R.id.listPots);
 
         // Register to MQTT
-        try {
-            Log.d("HELLO","HELLO");
-            mqttControl = new MqttControl(topicCmd, "E", false);
-//            mqttControlWriteHumid = new MqttControl(topicHumid, "F", true);
-//            mqttControlWriteLog = new MqttControl(topicLog, "G", false);
-        } catch (MqttException e) {
-            Log.d("HELLO","Error tum lum");
-            e.printStackTrace();
-        }
+//        try {
+//            Log.d("HELLO","HELLO");
+//            mqttControl = new MqttControl(topicCmd, "E", false);
+////            mqttControlWriteHumid = new MqttControl(topicHumid, "F", true);
+////            mqttControlWriteLog = new MqttControl(topicLog, "G", false);
+//        } catch (MqttException e) {
+//            Log.d("HELLO","Error tum lum");
+//            e.printStackTrace();
+//        }
 
         Log.d("HELLO","HELLO");
 
@@ -187,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         databasePot.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -203,16 +199,19 @@ public class MainActivity extends AppCompatActivity {
 //                            Integer a = Integer.parseInt(pot.getRawValue());
 //                            Log.d("a", a + "");
 //                            Log.d("getType",  pot.getType());
+//                            Log.d("temp0", type0_min + "");
+//                            Log.d("temp1", type1_min + "");
+//                            Log.d("temp2", type2_min + "");
 //                            switch (pot.getType()){
 //                                case "0":
-//                                    if (a<type0_min){sendOnChannel1(); Log.d("go in here","yes");break;}
+//                                    if (a<80){sendOnChannel1(); Log.d("go in here","yes");break;}
 //                                case "1":
-//                                    if (a<type1_min) {
+//                                    if (a<40) {
 //                                        sendOnChannel1();
 //                                        break;
 //                                    }
 //                                case "2":
-//                                    if (a<type2_min) {
+//                                    if (a<20) {
 //                                        sendOnChannel1();
 //                                        break;
 //                                    }

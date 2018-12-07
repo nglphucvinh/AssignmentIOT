@@ -80,7 +80,6 @@ public class DetailView extends AppCompatActivity {
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
         String date = intent.getStringExtra(MainActivity.POT_TIME);
         String type = intent.getStringExtra(MainActivity.POT_TYPE);
-//        final String id = intent.getStringExtra(MainActivity.POT_ID);
         id = intent.getStringExtra(MainActivity.POT_ID);
         Toast.makeText(this, type, Toast.LENGTH_SHORT).show();
 
@@ -117,23 +116,22 @@ public class DetailView extends AppCompatActivity {
         lineChart = (LineChart) findViewById(R.id.LineChart);
 
         mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child(pot).child("data");
-        databaseControl = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child("pot1");
+        databaseControl = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child(pot);
 
-        Log.d("humid",humidMax+"");
-        Log.d("code","C"+ id + humidMax +MAC_01);
+
         imageWaterCan = (ImageView) findViewById(R.id.imageViewWaterCanIcon);
         imageWaterCan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(DetailView.this, "Hello", Toast.LENGTH_SHORT).show();
-                String code = "C" + id + humidMax + MAC_01;
+                String code = "C" + id + humidMax + MAC_01;Log.d("code","C"+ id + humidMax +MAC_01);
                 Commands key = new Commands(code);
                 databaseControl.child("commands").setValue(key);
-                try{
-                    MainActivity.mqttControl.sendmessage(code,MainActivity.topicCmd);
-                } catch (MqttException e){
-
-                }
+//                try{
+//                    MainActivity.mqttControl.sendmessage(code,MainActivity.topicCmd);
+//                } catch (MqttException e){
+//
+//                }
 
             }
         });
@@ -159,8 +157,6 @@ public class DetailView extends AppCompatActivity {
                 final LineDataSet lineDataSet = new LineDataSet(yData,"Humidity");
                 LineData data = new LineData(lineDataSet);
 
-
-
                 lineChart.setData(data);
                 lineChart.notifyDataSetChanged();
                 lineChart.invalidate();
@@ -182,33 +178,33 @@ public class DetailView extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
-            case R.id.nowWater:
-                Toast.makeText(this, "Changed to smart-water mode", Toast.LENGTH_SHORT).show();
-
-
-                return true;
+//            case R.id.nowWater:
+//                Toast.makeText(this, "Changed to smart-water mode", Toast.LENGTH_SHORT).show();
+//
+//
+//                return true;
             case R.id.autoWater:
                 Toast.makeText(this, "Changed to auto-water mode", Toast.LENGTH_SHORT).show();
 
                 String codeB = "B" + id + humidMax + humidMin + MAC_01;
                 Commands keyB = new Commands(codeB);
                 databaseControl.child("commands").setValue(keyB);
-                try{
-                    MainActivity.mqttControl.sendmessage(codeB,MainActivity.topicCmd);
-                } catch (MqttException e){
-
-                }
+//                try{
+//                    MainActivity.mqttControl.sendmessage(codeB,MainActivity.topicCmd);
+//                } catch (MqttException e){
+//
+//                }
                 return true;
             case R.id.manualWater:
                 Toast.makeText(this, "Changed to manual-water mode", Toast.LENGTH_SHORT).show();
                 String codeR = "R" + id + "00" + MAC_01;
                 Commands keyR = new Commands(codeR);
                 databaseControl.child("commands").setValue(keyR);
-                try{
-                    MainActivity.mqttControl.sendmessage(codeR,MainActivity.topicCmd);
-                } catch (MqttException e){
-
-                }
+//                try{
+//                    MainActivity.mqttControl.sendmessage(codeR,MainActivity.topicCmd);
+//                } catch (MqttException e){
+//
+//                }
 
                 return true;
             default: return super.onOptionsItemSelected(item);

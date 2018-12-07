@@ -10,9 +10,9 @@
 
         <menu>
 
-            <item
-                android:id="@+id/nowWater"
-                android:title="Smart Water" />
+            <!--<item-->
+                <!--android:id="@+id/nowWater"-->
+                <!--android:title="Smart Water" />-->
 
             <item android:id="@+id/autoWater"
                 android:title="Auto-water"/>
