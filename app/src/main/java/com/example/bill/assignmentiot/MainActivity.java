@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String topicLog = "log";
     public static final String topicCmd = "command";
 
-    private MqttControl mqttControlRead;
-    private MqttControl mqttControlWriteHumid;
-    private MqttControl mqttControlWriteLog;
+    public static MqttControl mqttControl;
+    public static MqttControl mqttControlWriteHumid;
+    public static MqttControl mqttControlWriteLog;
 
     // Declare Notification Compat for API 25 and lower
     private NotificationManagerCompat notificationManager;
@@ -118,17 +118,15 @@ public class MainActivity extends AppCompatActivity {
         listViewPots = (ListView) findViewById(R.id.listPots);
 
         // Register to MQTT
-//        try {
-//            Log.d("HELLO","HELLO");
-//            mqttControlRead = new MqttControl(topicCmd, "ClientCmd1", false);
-//            Log.d("HELLO","Kn ne");
-//            mqttControlWriteHumid = new MqttControl(topicHumid, "ClientHumid1", true);
-//            mqttControlWriteLog = new MqttControl(topicLog, "ClientLog1", false);
-//            mqttControlRead.sendmessage("Hello",topicCmd);
-//        } catch (MqttException e) {
-//            Log.d("HELLO","Error tum lum");
-//            e.printStackTrace();
-//        }
+        try {
+            Log.d("HELLO","HELLO");
+            mqttControl = new MqttControl(topicCmd, "E", false);
+//            mqttControlWriteHumid = new MqttControl(topicHumid, "F", true);
+//            mqttControlWriteLog = new MqttControl(topicLog, "G", false);
+        } catch (MqttException e) {
+            Log.d("HELLO","Error tum lum");
+            e.printStackTrace();
+        }
 
         Log.d("HELLO","HELLO");
 

@@ -26,6 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 import java.util.ArrayList;
 
 import static android.os.SystemClock.sleep;
@@ -44,7 +46,8 @@ public class DetailView extends AppCompatActivity {
     DatabaseReference databasePlants;
     DatabaseReference databaseControl;
     static Integer humidMax;
-
+    static Integer humidMin;
+    String id;
     // LineChart Graph
     private LineChart lineChart;
     ArrayList<Entry> yData;
@@ -77,7 +80,8 @@ public class DetailView extends AppCompatActivity {
         String humid = intent.getStringExtra(MainActivity.POT_VALUE);
         String date = intent.getStringExtra(MainActivity.POT_TIME);
         String type = intent.getStringExtra(MainActivity.POT_TYPE);
-        final String id = intent.getStringExtra(MainActivity.POT_ID);
+//        final String id = intent.getStringExtra(MainActivity.POT_ID);
+        id = intent.getStringExtra(MainActivity.POT_ID);
         Toast.makeText(this, type, Toast.LENGTH_SHORT).show();
 
         textViewPot.setText(pot);
@@ -93,10 +97,12 @@ public class DetailView extends AppCompatActivity {
                 if (plant != null){
                     name = plant.getName();
                     humidMax = plant.getHumid_max();
+                    humidMin = plant.getHumid_min();
                 }
                 else {
                     name = "undefined";
                     humidMax = 60;
+                    humidMin = 10;
                 }
                 textViewPlant.setText(name);
 
@@ -123,6 +129,12 @@ public class DetailView extends AppCompatActivity {
                 String code = "C" + id + humidMax + MAC_01;
                 Commands key = new Commands(code);
                 databaseControl.child("commands").setValue(key);
+                try{
+                    MainActivity.mqttControl.sendmessage(code,MainActivity.topicCmd);
+                } catch (MqttException e){
+
+                }
+
             }
         });
     }
@@ -178,11 +190,25 @@ public class DetailView extends AppCompatActivity {
             case R.id.autoWater:
                 Toast.makeText(this, "Changed to auto-water mode", Toast.LENGTH_SHORT).show();
 
+                String codeB = "B" + id + humidMax + humidMin + MAC_01;
+                Commands keyB = new Commands(codeB);
+                databaseControl.child("commands").setValue(keyB);
+                try{
+                    MainActivity.mqttControl.sendmessage(codeB,MainActivity.topicCmd);
+                } catch (MqttException e){
 
+                }
                 return true;
             case R.id.manualWater:
                 Toast.makeText(this, "Changed to manual-water mode", Toast.LENGTH_SHORT).show();
+                String codeR = "R" + id + "00" + MAC_01;
+                Commands keyR = new Commands(codeR);
+                databaseControl.child("commands").setValue(keyR);
+                try{
+                    MainActivity.mqttControl.sendmessage(codeR,MainActivity.topicCmd);
+                } catch (MqttException e){
 
+                }
 
                 return true;
             default: return super.onOptionsItemSelected(item);

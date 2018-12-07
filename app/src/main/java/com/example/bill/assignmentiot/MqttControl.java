@@ -13,9 +13,9 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import java.io.IOException;
 
 public class MqttControl implements MqttCallback {
-    private static final String username = "fhyfukyy";
-    private static final String password = "FqEgXcCxxD6v";
-    private static final String serveruri = "tcp://m14.cloudmqtt.com:14273";
+    private static final String username = "uaijweiy";
+    private static final String password = "Fsz3BK1eUXev";
+    private static final String serveruri = "tcp://m10.cloudmqtt.com:13170";
     private String clientId = "raspberry";
     private String toPic = "command";
     private static final String TAG = MqttControl.class.getSimpleName();
