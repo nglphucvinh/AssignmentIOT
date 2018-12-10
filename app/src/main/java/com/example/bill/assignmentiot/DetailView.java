@@ -39,15 +39,18 @@ public class DetailView extends AppCompatActivity {
     TextView textViewHumid;
     TextView textViewPlant;
     TextView textViewDate;
-//  TextView textViewStatus;
     ImageView imageWaterCan;
 
 
     DatabaseReference databasePlants;
     DatabaseReference databaseControl;
+    DatabaseReference databasePot;
+//    private Param current = new Param();
+
     static Integer humidMax;
     static Integer humidMin;
     String id;
+
     // LineChart Graph
     private LineChart lineChart;
     ArrayList<Entry> yData;
@@ -59,20 +62,20 @@ public class DetailView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_view);
 
+        // Setting up Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // add back arrow to toolbar
+        // Add back arrow to toolbar
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-
+        // Linking to Design
         textViewPot = (TextView) findViewById(R.id.textPot);
         textViewHumid = (TextView) findViewById(R.id.textHumid);
         textViewPlant = (TextView) findViewById(R.id.textPlant);
         textViewDate = (TextView) findViewById(R.id.textViewID);
-//        textViewStatus = (TextView) findViewById(R.id.textViewStatus);
 
         // Receive Intent from List View
         Intent intent = getIntent();
@@ -117,13 +120,23 @@ public class DetailView extends AppCompatActivity {
 
         mPostReference = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child(pot).child("data");
         databaseControl = FirebaseDatabase.getInstance().getReference("db").child("user0").child(MAC_01).child(pot);
-
+//        databaseControl.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                current = dataSnapshot.getValue(Param.class);
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.d("Current", "read failed");
+//            }
+//        });
 
         imageWaterCan = (ImageView) findViewById(R.id.imageViewWaterCanIcon);
         imageWaterCan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(DetailView.this, "Hello", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailView.this, "Control sent", Toast.LENGTH_SHORT).show();
                 String code = "C" + id + humidMax + MAC_01;Log.d("code","C"+ id + humidMax +MAC_01);
                 Commands key = new Commands(code);
                 databaseControl.child("commands").setValue(key);
@@ -169,6 +182,7 @@ public class DetailView extends AppCompatActivity {
         });
     }
 
+    // Toolbar processing
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -185,7 +199,8 @@ public class DetailView extends AppCompatActivity {
 //                return true;
             case R.id.autoWater:
                 Toast.makeText(this, "Changed to auto-water mode", Toast.LENGTH_SHORT).show();
-
+//                current.setAuto(true);
+//                databaseControl.setValue(current);
                 String codeB = "B" + id + humidMax + humidMin + MAC_01;
                 Commands keyB = new Commands(codeB);
                 databaseControl.child("commands").setValue(keyB);
@@ -197,6 +212,8 @@ public class DetailView extends AppCompatActivity {
                 return true;
             case R.id.manualWater:
                 Toast.makeText(this, "Changed to manual-water mode", Toast.LENGTH_SHORT).show();
+//                current.setAuto(false);
+//                databaseControl.setValue(current);
                 String codeR = "R" + id + "00" + MAC_01;
                 Commands keyR = new Commands(codeR);
                 databaseControl.child("commands").setValue(keyR);

@@ -44,5 +44,7 @@ public class Param {
         return type;
     }
 
-
+    public void setAuto(boolean auto) {
+        this.auto = auto;
+    }
 }

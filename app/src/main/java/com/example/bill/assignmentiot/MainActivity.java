@@ -85,25 +85,25 @@ public class MainActivity extends AppCompatActivity {
 
         // Setting Condition for notification
         databasePlants = FirebaseDatabase.getInstance().getReference("plant");
-        databasePlants.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
-                if (plant0 != null){ type0_min = plant0.getHumid_min(); } // 80
-                else { type0_min = 10; }
-                plant0 = dataSnapshot.child("1").getValue(Plants.class);
-                if (plant0 != null){ type1_min = plant0.getHumid_min(); } // 40
-                else { type0_min = 20; }
-                plant0 = dataSnapshot.child("2").getValue(Plants.class);
-                if (plant0 != null){ type2_min = plant0.getHumid_min(); } // 20
-                else { type0_min = 30; }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("Plant DB", "read failed");
-            }
-        });
+//        databasePlants.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                Plants plant0 = dataSnapshot.child("0").getValue(Plants.class);
+//                if (plant0 != null){ type0_min = plant0.getHumid_min(); } // 80
+//                else { type0_min = 10; }
+//                plant0 = dataSnapshot.child("1").getValue(Plants.class);
+//                if (plant0 != null){ type1_min = plant0.getHumid_min(); } // 40
+//                else { type0_min = 20; }
+//                plant0 = dataSnapshot.child("2").getValue(Plants.class);
+//                if (plant0 != null){ type2_min = plant0.getHumid_min(); } // 20
+//                else { type0_min = 30; }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//                Log.d("Plant DB", "read failed");
+//            }
+//        });
         Log.d("temp3", type2_min + "");
         // Try setting value in firebase
 //        Param pot = new Param("Pot1","25", "01/12/2018 13:49:30", "0");
@@ -194,14 +194,10 @@ public class MainActivity extends AppCompatActivity {
                     Param pot = paramSnapshot.getValue(Param.class);
 
                     Pots.add(pot);
-//                    if (notiFlag) {
-//                        if (pot != null) {
-//                            Integer a = Integer.parseInt(pot.getRawValue());
-//                            Log.d("a", a + "");
-//                            Log.d("getType",  pot.getType());
-//                            Log.d("temp0", type0_min + "");
-//                            Log.d("temp1", type1_min + "");
-//                            Log.d("temp2", type2_min + "");
+                    if (notiFlag) {
+                        if (pot != null) {
+                            Integer a = Integer.parseInt(pot.getRawValue());
+                            // Humidity threshold for Notification
 //                            switch (pot.getType()){
 //                                case "0":
 //                                    if (a<80){sendOnChannel1(); Log.d("go in here","yes");break;}
@@ -217,8 +213,9 @@ public class MainActivity extends AppCompatActivity {
 //                                    }
 //                                default: break;
 //                            }
-//                        }
-//                    }
+                            if (a < 20) {sendOnChannel1();}
+                        }
+                    }
 
                 }
 
@@ -233,13 +230,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // For sending out notification
     public void sendOnChannel1(){
         Intent activityIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0, activityIntent, 0);
         // Set Action
         Intent broadcastIntent = new Intent(this, NotificationReceiver.class);
-        broadcastIntent.putExtra("toastMessage", "hello");
+        broadcastIntent.putExtra("toastMessage", "Control sent");
         PendingIntent actionIntent = PendingIntent.getBroadcast(this,0,broadcastIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         // Icon in Notification
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.plant);
